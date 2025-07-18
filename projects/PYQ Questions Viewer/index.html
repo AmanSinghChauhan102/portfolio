@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BCA Question Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #f8f9fd;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s ease;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+
+    select {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 25px;
+      background-color: #eef1f8;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      appearance: none; /* Remove default arrow */
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><polygon points="0,0 24,0 12,12" fill="%234a90e2"/></svg>'); /* Custom arrow */
+      background-repeat: no-repeat;
+      background-position: right 15px center; /* Move arrow further left */
+      background-size: 20px; /* Increased size of the arrow */
+    }
+
+    select:focus {
+      outline: none;
+      background: #dce3f2;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 25px;
+      background-color: #4a90e2;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    button:hover {
+      background-color: #357bd8;
+      transform: scale(1.05);
+    }
+
+    .image-viewer img {
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .mode-button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 25px;
+      background-color: #4a90e2;
+      color: white;
+      transition: background 0.3s ease;
+      text-align: center;
+    }
+
+    .mode-button:hover {
+      background-color: #357bd8;
+    }
+
+    .dark-mode {
+      background: #333;
+      color: #f8f9fd;
+    }
+
+    .dark-mode .container {
+      background: #444;
+    }
+
+    .dark-mode h1 {
+      color: #f8f9fd; /* Ensure title is visible in dark mode */
+    }
+
+    .dark-mode select {
+      background-color: #555;
+      color: #f8f9fd;
+    }
+
+    .dark-mode button {
+      background-color: #6a9bd1;
+    }
+
+    .dark-mode button:hover {
+      background-color: #5a8bc1;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      select, button {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>BCA Previous Year Questions</h1>
+    <div class="mode-button" id="modeButton">Night Mode</div>
+    <select id="semester">
+      <option value="">Select Semester</option>
+      <option value="sem1">Semester 1</option>
+      <option value="sem2">Semester 2</option>
+      <option value="sem3">Semester 3</option>
+      <option value="sem4">Semester 4</option>
+      <option value="sem5">Semester 5</option>
+      <option value="sem6">Semester 6</option>
+    </select>
+
+    <select id="year">
+      <option value="">Select Year</option>
+      <option value="2020">2020</option>
+      <option value="2021">2021</option>
+      <option value="2022">2022</option>
+      <option value="2023">2023</option>
+      <option value="2024">2024</option>
+      <option value="2025">2025 </option>
+    </select>
+
+    <select id="subject">
+      <option value="">Select Subject</option>
+    </select>
+
+    <button onclick="showImages()">View Question Paper</button>
+
+    <div class="image-viewer" id="imageViewer"></div>
+  </div>
+
+  <script>
+    const subjects = {
+      sem1: ['Computer Fundamentals', 'C Programming', 'Math', 'English'],
+      sem2: ['Computer System Architecture', 'Java', 'Math II', 'Environmental Science'],
+      sem3: ['SSAD', 'Python', 'Statistics', 'Operating System', 'Environmental Law'],
+      sem4: ['Computer Networking', 'RDBMS', 'VB Dot Net', 'Statistics II', 'Solid Waste Management'],
+      sem5: ['AI', 'Mobile Computing', 'Web Frameworks'],
+      sem6: ['Project', 'Cyber Security', 'Cloud Computing']
+    };
+
+    document.getElementById('semester').addEventListener('change', function () {
+      const sem = this.value;
+      const subjectSelect = document.getElementById('subject');
+      subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+      if (subjects[sem]) {
+        subjects[sem].forEach(sub => {
+          const opt = document.createElement('option');
+          opt.value = sub.toLowerCase().replace(/\s/g, '');
+          opt.textContent = sub;
+          subjectSelect.appendChild(opt);
+        });
+      }
+    });
+
+    function showImages() {
+      const sem = document.getElementById('semester').value;
+      const year = document.getElementById('year').value;
+      const subject = document.getElementById('subject').value;
+
+      const viewer = document.getElementById('imageViewer');
+      if (!sem || !year || !subject) {
+        alert("Please select all fields.");
+        return;
+      }
+
+      viewer.innerHTML = "";
+
+      let i = 1;
+      let foundAny = false;
+
+      function loadNextImage() {
+        const img = new Image();
+        img.src = `images/${sem}/${year}/${subject}/${i}.jpg`;
+        img.onload = function () {
+          viewer.appendChild(img);
+          i++;
+          foundAny = true;
+          loadNextImage();
+        };
+        img.onerror = function () {
+          if (!foundAny) {
+            viewer.innerHTML = "<p style='text-align:center; color: gray;'>No question papers found for the selected combination.</p>";
+          }
+        };
+      }
+
+      loadNextImage();
+    }
+
+    // Toggle Day/Night Mode
+    const modeButton = document.getElementById('modeButton');
+    modeButton.addEventListener('click', function() {
+      document.body.classList.toggle('dark-mode');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      modeButton.textContent = isDarkMode ? 'Day Mode' : 'Night Mode';
+    });
+  </script>
+</body>
+</html>
